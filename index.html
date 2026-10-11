@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Simulador educativo para explorar la teoría de Melanie Klein mediante una viñeta clínica ficticia.">
+    <meta name="theme-color" content="#13172f">
+    <title>Mundo interno | Laboratorio kleiniano</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%2313172f'/%3E%3Ccircle cx='24' cy='32' r='15' fill='%235de0c3'/%3E%3Ccircle cx='40' cy='32' r='15' fill='%23ff7f66' fill-opacity='.86'/%3E%3Cpath d='M32 17v30' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <a class="skip-link" href="#laboratorio">Saltar al laboratorio</a>
+
+    <header class="topbar">
+      <a class="brand" href="#laboratorio" aria-label="Ir al laboratorio">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
+        <span><strong>Mundo interno</strong><small>Laboratorio kleiniano</small></span>
+      </a>
+
+      <nav class="top-actions" aria-label="Herramientas">
+        <button class="text-button" type="button" data-open="glossaryDialog">Glosario</button>
+        <button class="text-button" type="button" data-open="aboutDialog">Marco teórico</button>
+        <div class="mode-switch" role="group" aria-label="Modo de uso">
+          <button type="button" class="mode-button active" data-mode="student" aria-pressed="true">Estudiante</button>
+          <button type="button" class="mode-button" data-mode="teacher" aria-pressed="false">Docente</button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="laboratorio">
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Simulación conceptual</p>
+          <h1 id="page-title">Explora una escena de juego desde la teoría de Melanie Klein</h1>
+        </div>
+        <p class="intro-copy">Modifica la experiencia de Clara y observa cómo se reorganiza la relación con sus objetos internos. No hay una respuesta automática: la lectura clínica siempre requiere contexto, historia y supervisión.</p>
+      </section>
+
+      <section class="lab-grid" aria-label="Simulador">
+        <aside class="case-panel card" aria-labelledby="case-title">
+          <div class="card-heading">
+            <span class="step-badge" id="sceneNumber">1</span>
+            <div>
+              <p class="eyebrow">Viñeta ficticia</p>
+              <h2 id="case-title">Clara y la casa de bloques</h2>
+            </div>
+          </div>
+
+          <div class="scene-tabs" role="tablist" aria-label="Momentos de la viñeta">
+            <button id="tab-arrival" role="tab" aria-selected="true" aria-controls="sceneText" tabindex="0" data-scene="arrival">La llegada</button>
+            <button id="tab-frustration" role="tab" aria-selected="false" aria-controls="sceneText" tabindex="-1" data-scene="frustration">La caída</button>
+            <button id="tab-repair" role="tab" aria-selected="false" aria-controls="sceneText" tabindex="-1" data-scene="repair">El reencuentro</button>
+          </div>
+
+          <p id="sceneText" class="scene-text" tabindex="0"></p>
+
+          <div class="observation-box">
+            <p class="eyebrow">Consigna de observación</p>
+            <p id="observationPrompt"></p>
+          </div>
+
+          <div class="teacher-only teacher-note" hidden>
+            <p class="eyebrow">Pregunta para el grupo</p>
+            <p id="teacherPrompt"></p>
+          </div>
+
+          <button id="resetButton" class="secondary-button" type="button">
+            <span aria-hidden="true">↻</span> Reiniciar escena
+          </button>
+        </aside>
+
+        <section class="world-card card" aria-labelledby="world-title">
+          <div class="world-header">
+            <div>
+              <p class="eyebrow">Representación dinámica</p>
+              <h2 id="world-title">El mundo interno de Clara</h2>
+            </div>
+            <span class="status-pill" id="positionPill">Predominio esquizoparanoide</span>
+          </div>
+
+          <div class="world" id="world" aria-describedby="worldCaption">
+            <div class="atmosphere" aria-hidden="true"></div>
+            <div class="orbit orbit-one" aria-hidden="true"></div>
+            <div class="orbit orbit-two" aria-hidden="true"></div>
+
+            <div class="object object-good" id="goodObject">
+              <span class="object-icon" aria-hidden="true">●</span>
+              <strong>Objeto gratificante</strong>
+              <small>cuidado, presencia, alivio</small>
+            </div>
+
+            <div class="child-self" id="childSelf" aria-label="Representación del yo de Clara">
+              <span class="self-halo" aria-hidden="true"></span>
+              <span class="self-figure" aria-hidden="true">C</span>
+              <strong>Clara</strong>
+              <small>yo en relación</small>
+            </div>
+
+            <div class="object object-bad" id="badObject">
+              <span class="object-icon" aria-hidden="true">●</span>
+              <strong>Objeto frustrante</strong>
+              <small>ausencia, límite, demora</small>
+            </div>
+
+            <svg class="relation-lines" viewBox="0 0 800 430" preserveAspectRatio="none" aria-hidden="true">
+              <path id="goodLine" d="M150 180 Q400 70 650 180"></path>
+              <path id="badLine" d="M150 290 Q400 410 650 290"></path>
+              <path id="integrationArc" d="M150 180 Q70 235 150 290"></path>
+            </svg>
+
+            <div class="process-token" id="processToken" aria-live="polite">La experiencia está fragmentada</div>
+          </div>
+
+          <p id="worldCaption" class="figure-caption"><strong>Esquema funcional no proporcional.</strong> Las distancias y colores representan relaciones conceptuales, no estructuras anatómicas ni medidas clínicas.</p>
+
+          <div class="meters" aria-label="Indicadores conceptuales">
+            <div class="meter">
+              <div><span>Ansiedad persecutoria</span><output id="anxietyValue">72</output></div>
+              <div class="meter-track"><i id="anxietyBar"></i></div>
+            </div>
+            <div class="meter">
+              <div><span>Integración del objeto</span><output id="integrationValue">28</output></div>
+              <div class="meter-track"><i id="integrationBar"></i></div>
+            </div>
+            <div class="meter">
+              <div><span>Capacidad de reparación</span><output id="repairValue">18</output></div>
+              <div class="meter-track"><i id="repairBar"></i></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="controls-panel card" aria-labelledby="controls-title">
+          <div class="card-heading compact">
+            <div>
+              <p class="eyebrow">Intervenciones conceptuales</p>
+              <h2 id="controls-title">¿Qué proceso predomina?</h2>
+            </div>
+          </div>
+
+          <div class="mechanism-grid" id="mechanismGrid">
+            <button class="mechanism" type="button" data-mechanism="splitting">
+              <span class="mechanism-symbol split-symbol" aria-hidden="true">◐</span>
+              <span><strong>Escisión</strong><small>Separa cualidades vividas como incompatibles.</small></span>
+            </button>
+            <button class="mechanism" type="button" data-mechanism="projection">
+              <span class="mechanism-symbol projection-symbol" aria-hidden="true">↗</span>
+              <span><strong>Proyección</strong><small>Atribuye al objeto impulsos o afectos propios.</small></span>
+            </button>
+            <button class="mechanism" type="button" data-mechanism="introjection">
+              <span class="mechanism-symbol introjection-symbol" aria-hidden="true">↙</span>
+              <span><strong>Introyección</strong><small>Incorpora aspectos de la relación con el objeto.</small></span>
+            </button>
+            <button class="mechanism" type="button" data-mechanism="repair">
+              <span class="mechanism-symbol repair-symbol" aria-hidden="true">✦</span>
+              <span><strong>Reparación</strong><small>Busca restaurar el vínculo que se teme haber dañado.</small></span>
+            </button>
+          </div>
+
+          <div class="active-reading" aria-live="polite">
+            <p class="eyebrow">Lectura del movimiento</p>
+            <h3 id="readingTitle">Una experiencia todavía dividida</h3>
+            <p id="readingText"></p>
+          </div>
+
+          <div class="teacher-only teacher-controls" hidden>
+            <div class="teacher-control-header">
+              <div>
+                <p class="eyebrow">Variables del escenario</p>
+                <h3>Ajuste docente</h3>
+              </div>
+              <button class="icon-button" id="toggleInterpretation" type="button" aria-expanded="false" aria-controls="teacherInterpretation" title="Mostrar lectura orientativa">?</button>
+            </div>
+            <label for="frustrationRange">Intensidad de la frustración <output id="frustrationOutput">62</output></label>
+            <input id="frustrationRange" type="range" min="0" max="100" value="62">
+            <label for="containmentRange">Disponibilidad del objeto <output id="containmentOutput">38</output></label>
+            <input id="containmentRange" type="range" min="0" max="100" value="38">
+            <div id="teacherInterpretation" class="interpretation" hidden></div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="concept-map card" aria-labelledby="map-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Mapa de lectura</p>
+            <h2 id="map-title">De la fragmentación a una integración posible</h2>
+          </div>
+          <p>Las posiciones no son casillas definitivas. Una persona puede oscilar entre ellas según la ansiedad y el contexto.</p>
+        </div>
+        <div class="position-spectrum" aria-label="Continuo conceptual entre posiciones">
+          <article>
+            <span class="spectrum-dot split"></span>
+            <p class="eyebrow">Posición esquizoparanoide</p>
+            <h3>Preservar lo bueno, expulsar lo amenazante</h3>
+            <p>La escisión ayuda a organizar una experiencia intensa, pero limita la integración de aspectos gratificantes y frustrantes en un mismo objeto.</p>
+          </article>
+          <div class="spectrum-bridge" aria-hidden="true"><i id="spectrumMarker"></i></div>
+          <article>
+            <span class="spectrum-dot integrate"></span>
+            <p class="eyebrow">Posición depresiva</p>
+            <h3>Reconocer ambivalencia y cuidar el vínculo</h3>
+            <p>El objeto comienza a percibirse como total. Aparecen preocupación, culpa y deseos de reparación, junto con una mayor tolerancia a la ambivalencia.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="projective-lab card" aria-labelledby="projective-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Módulo 2 · Relación dinámica</p>
+            <h2 id="projective-title">Identificación proyectiva: del afecto a la respuesta del objeto</h2>
+          </div>
+          <p>Compara respuestas posibles sin convertir el ciclo en una explicación automática de la conducta.</p>
+        </div>
+
+        <div class="projective-grid">
+          <div class="projective-scene">
+            <div class="scene-quote">
+              <span class="quote-mark" aria-hidden="true">“</span>
+              <p>Al escuchar que la sesión terminará pronto, Clara empuja varios bloques hacia la terapeuta y dice: «Tú estás enojada. Quieres tirar todo».</p>
+            </div>
+            <p class="scene-observation"><strong>Dato adicional:</strong> la terapeuta nota un impulso repentino de retirar los juguetes con brusquedad. Reconocer ese afecto no demuestra por sí mismo una identificación proyectiva, pero permite examinar la relación.</p>
+
+            <div class="cycle" aria-label="Ciclo conceptual de identificación proyectiva">
+              <article class="cycle-step active" data-cycle-step="0">
+                <span>1</span><div><strong>Afecto difícil</strong><small>Temor al abandono y enojo.</small></div>
+              </article>
+              <i aria-hidden="true">↓</i>
+              <article class="cycle-step" data-cycle-step="1">
+                <span>2</span><div><strong>Proyección fantaseada</strong><small>Lo hostil se sitúa en el objeto.</small></div>
+              </article>
+              <i aria-hidden="true">↓</i>
+              <article class="cycle-step" data-cycle-step="2">
+                <span>3</span><div><strong>Presión relacional</strong><small>La interacción puede convocar una respuesta.</small></div>
+              </article>
+              <i aria-hidden="true">↓</i>
+              <article class="cycle-step" data-cycle-step="3">
+                <span>4</span><div><strong>Respuesta del objeto</strong><small id="objectResponseLabel">Aún no seleccionada.</small></div>
+              </article>
+              <i aria-hidden="true">↓</i>
+              <article class="cycle-step" data-cycle-step="4">
+                <span>5</span><div><strong>Reintroyección</strong><small id="reintrojectionLabel">El ciclo permanece abierto.</small></div>
+              </article>
+            </div>
+          </div>
+
+          <div class="response-lab">
+            <p class="eyebrow">Elige una respuesta de la terapeuta</p>
+            <div class="response-options" role="group" aria-label="Respuestas posibles de la terapeuta">
+              <button type="button" data-response="defensive"><strong>Defensiva</strong><small>«Yo no estoy enojada. Eso es tuyo».</small></button>
+              <button type="button" data-response="rejection"><strong>Rechazo</strong><small>Retira los bloques y termina el juego.</small></button>
+              <button type="button" data-response="enactment"><strong>Actuación</strong><small>Aparta las piezas con irritación.</small></button>
+              <button type="button" data-response="containment"><strong>Contención</strong><small>Reconoce el clima afectivo y sostiene el límite.</small></button>
+              <button type="button" data-response="premature"><strong>Interpretación prematura</strong><small>Nombra el mecanismo antes de explorar la experiencia.</small></button>
+            </div>
+
+            <div class="response-reading" aria-live="polite">
+              <p class="eyebrow">Resultado conceptual</p>
+              <h3 id="responseTitle">Selecciona una respuesta</h3>
+              <p id="responseText">El modelo mostrará cómo la respuesta del objeto podría participar en la continuidad o transformación del ciclo.</p>
+              <div class="response-meters" aria-label="Cambios conceptuales del ciclo">
+                <div><span>Persecución</span><output id="persecutionOutput">50</output><i><b id="persecutionBar"></b></i></div>
+                <div><span>Diferenciación yo-objeto</span><output id="differentiationOutput">50</output><i><b id="differentiationBar"></b></i></div>
+                <div><span>Posibilidad de simbolizar</span><output id="symbolizationOutput">50</output><i><b id="symbolizationBar"></b></i></div>
+              </div>
+              <p class="model-caution" id="responseCaution">Los valores son comparaciones didácticas, no mediciones clínicas.</p>
+            </div>
+
+            <button class="secondary-button reset-response" id="resetResponse" type="button">↻ Reiniciar ciclo</button>
+          </div>
+        </div>
+
+        <div class="teacher-only module-teacher-note" hidden>
+          <strong>Nota docente:</strong> la formulación original de identificación proyectiva procede de Klein. La función continente empleada aquí corresponde a desarrollos poskleinianos, especialmente Bion, por lo que no debe atribuirse sin matices a la autora.
+        </div>
+      </section>
+
+      <section class="reasoning-lab card" aria-labelledby="reasoning-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Taller de razonamiento clínico</p>
+            <h2 id="reasoning-title">¿Qué sabemos y qué estamos suponiendo?</h2>
+          </div>
+          <p>Clasifica cada frase según su nivel de interpretación. Una lectura rigurosa separa el dato de la hipótesis.</p>
+        </div>
+
+        <div class="reasoning-key" aria-label="Niveles de lectura clínica">
+          <span class="level-observation">Observación</span>
+          <span class="level-inference">Inferencia</span>
+          <span class="level-hypothesis">Hipótesis teórica</span>
+          <span class="level-overreach">Conclusión injustificada</span>
+        </div>
+
+        <form id="reasoningForm">
+          <div id="reasoningItems" class="reasoning-items"></div>
+          <div class="quiz-actions">
+            <button class="primary-button" type="submit">Revisar clasificación</button>
+            <button class="secondary-button" id="resetReasoning" type="button" hidden>Volver a intentar</button>
+          </div>
+        </form>
+        <div id="reasoningResult" class="quiz-result" aria-live="polite" hidden></div>
+      </section>
+
+      <section class="assessment card" aria-labelledby="assessment-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Autoevaluación</p>
+            <h2 id="assessment-title">Comprueba tu lectura</h2>
+          </div>
+          <p>Las preguntas evalúan relaciones entre conceptos, no memorización aislada.</p>
+        </div>
+        <form id="quizForm">
+          <div id="quizQuestions" class="quiz-grid"></div>
+          <div class="quiz-actions">
+            <button class="primary-button" type="submit">Revisar respuestas</button>
+            <button class="secondary-button" id="retryQuiz" type="button" hidden>Intentar de nuevo</button>
+          </div>
+        </form>
+        <div id="quizResult" class="quiz-result" aria-live="polite" hidden></div>
+      </section>
+
+      <section class="limits" aria-label="Alcance del recurso">
+        <div class="limit-icon" aria-hidden="true">i</div>
+        <div>
+          <h2>Alcance y cuidado interpretativo</h2>
+          <p>Este laboratorio organiza conceptos de una tradición psicoanalítica. Los indicadores son recursos didácticos, no escalas validadas. La escena no permite diagnosticar a Clara ni inferir una estructura clínica.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p><strong>Mundo interno</strong> · Recurso educativo de teoría kleiniana</p>
+      <button class="text-button" type="button" data-open="sourcesDialog">Bibliografía y criterios</button>
+    </footer>
+
+    <dialog id="glossaryDialog">
+      <div class="dialog-head">
+        <div><p class="eyebrow">Consulta rápida</p><h2>Glosario</h2></div>
+        <button class="close-button" type="button" data-close aria-label="Cerrar glosario">×</button>
+      </div>
+      <div id="glossaryList" class="glossary-list"></div>
+    </dialog>
+
+    <dialog id="aboutDialog">
+      <div class="dialog-head">
+        <div><p class="eyebrow">Antes de explorar</p><h2>Cómo leer este modelo</h2></div>
+        <button class="close-button" type="button" data-close aria-label="Cerrar marco teórico">×</button>
+      </div>
+      <div class="prose">
+        <p>En la teoría de Melanie Klein, la vida psíquica temprana se organiza mediante relaciones con objetos internos. La palabra «objeto» no designa una cosa, sino una representación afectivamente cargada de otra persona o de aspectos de ella.</p>
+        <p>Las posiciones esquizoparanoide y depresiva describen modos de organizar la ansiedad, las defensas y los vínculos. No son edades cerradas ni diagnósticos. Pueden reactivarse y coexistir en distintos momentos de la vida.</p>
+        <p>La identificación proyectiva no equivale simplemente a atribuir algo a otra persona. En su uso clínico posterior también se examina cómo la relación puede convocar una experiencia o respuesta en el objeto. Esa formulación ampliada debe distinguirse del texto original de Klein.</p>
+        <p>La visualización traduce relaciones teóricas a distancia, color y movimiento. Esa traducción facilita la discusión, pero no prueba que la mente funcione como el diagrama.</p>
+      </div>
+    </dialog>
+
+    <dialog id="sourcesDialog">
+      <div class="dialog-head">
+        <div><p class="eyebrow">Fuentes de base</p><h2>Bibliografía y criterios</h2></div>
+        <button class="close-button" type="button" data-close aria-label="Cerrar bibliografía">×</button>
+      </div>
+      <div class="prose sources-list">
+        <p>Klein, M. (1935). A contribution to the psychogenesis of manic-depressive states. <em>International Journal of Psycho-Analysis, 16</em>, 145-174.</p>
+        <p>Klein, M. (1946). Notes on some schizoid mechanisms. <em>International Journal of Psycho-Analysis, 27</em>, 99-110.</p>
+        <p>Klein, M. (1952). Some theoretical conclusions regarding the emotional life of the infant. En <em>Envy and Gratitude and Other Works 1946-1963</em>.</p>
+        <p>Bion, W. R. (1962). <em>Learning from Experience</em>. Heinemann.</p>
+        <p>Segal, H. (1964). <em>Introduction to the Work of Melanie Klein</em>. Heinemann.</p>
+        <hr>
+        <p><strong>Criterio de diseño:</strong> el simulador conserva la incertidumbre clínica, evita equivalencias automáticas entre conducta y mecanismo, y presenta las posiciones como configuraciones dinámicas.</p>
+      </div>
+    </dialog>
+
+    <script src="content.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
